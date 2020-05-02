@@ -27,55 +27,61 @@ julia&gt; qCF
 julia&gt; net1 = readTopology(&quot;((((D,C),((A,B))#H1),(#H1,E)),O);&quot;);
 
 julia&gt; net0 = readTopology(&quot;((((D,C),(A,B)),E),O);&quot;); # also: majorTree(net1)</code></pre><p><code>net0</code> has clades AB and CD sister to each other, with E sister to ABCD and an outgroup O. <code>net1</code> has <code>net0</code> as its major tree, and has a reticulation going from E into the stem lineage to AB.</p><p>The goal is to test the goodness-of-fit of each topology.</p><p>It&#39;s best to start with a small number of simulations for the test, to check that there are no issue. Then we can re-run with a larger number. Note that the first use of a function includes time to compile the function, so it takes longer than the second use. Below, the option <code>true</code> means that we want to optimize the branch lengths in the network, in coalescent units, before quantifying the goodness-of-fit.</p><pre><code class="language-julia-repl">julia&gt; res0 = quarnetGoFtest!(net0, qCF, true; seed=234, nsim=2);
-200.0 gene trees per 4-taxon set
-ERROR: TaskFailedException:
-UndefVarError: hybridlambda not defined
-macro expansion at /home/travis/build/cecileane/QuartetNetworkGoodnessFit.jl/src/quarnetGoF.jl:226 [inlined]
-(::QuartetNetworkGoodnessFit.var&quot;#30#33&quot;{typeof(QuartetNetworkGoodnessFit.multinom_lrt!),Bool,Bool,Int64,Array{Int64,1},String,Array{Float64,1},SharedArrays.SharedArray{Float64,1},SharedArrays.SharedArray{Float64,2},Array{String,1},String})(::UnitRange{Int64}, ::Int64, ::Int64) at /buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.4/Distributed/src/macros.jl:302
-#158 at /buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.4/Distributed/src/macros.jl:87 [inlined]
-run_work_thunk(::Distributed.var&quot;#158#160&quot;{UnitRange{Int64},QuartetNetworkGoodnessFit.var&quot;#30#33&quot;{typeof(QuartetNetworkGoodnessFit.multinom_lrt!),Bool,Bool,Int64,Array{Int64,1},String,Array{Float64,1},SharedArrays.SharedArray{Float64,1},SharedArrays.SharedArray{Float64,2},Array{String,1},String},UnitRange{Int64}}, ::Bool) at /buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.4/Distributed/src/process_messages.jl:79
-run_work_thunk at /buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.4/Distributed/src/process_messages.jl:88 [inlined]
-(::Distributed.var&quot;#94#96&quot;{Distributed.RemoteValue,Distributed.var&quot;#158#160&quot;{UnitRange{Int64},QuartetNetworkGoodnessFit.var&quot;#30#33&quot;{typeof(QuartetNetworkGoodnessFit.multinom_lrt!),Bool,Bool,Int64,Array{Int64,1},String,Array{Float64,1},SharedArrays.SharedArray{Float64,1},SharedArrays.SharedArray{Float64,2},Array{String,1},String},UnitRange{Int64}}})() at ./task.jl:358
-Stacktrace:
- [1] sync_end(::Array{Any,1}) at ./task.jl:316
- [2] (::Distributed.var&quot;#157#159&quot;{QuartetNetworkGoodnessFit.var&quot;#30#33&quot;{typeof(QuartetNetworkGoodnessFit.multinom_lrt!),Bool,Bool,Int64,Array{Int64,1},String,Array{Float64,1},SharedArrays.SharedArray{Float64,1},SharedArrays.SharedArray{Float64,2},Array{String,1},String},UnitRange{Int64}})() at ./task.jl:335</code></pre><p>Before re-running with more simulations, we can update the network <code>net0</code> to the version that has optimized branch lengths:</p><pre><code class="language-julia-repl">julia&gt; net0 = res0[5]
-ERROR: UndefVarError: res0 not defined</code></pre><p>Now we re-run the test using the option <code>false</code> to not re-optimize branch lengths. We use <code>nsim=200</code> simulations below to make this example faster. For a real data analysis, delete the <code>nsim</code> option to use the default instead (1000) or specify higher value.</p><pre><code class="language-julia-repl">julia&gt; res0 = quarnetGoFtest!(net0, qCF, false; seed=234, nsim=200);
-200.0 gene trees per 4-taxon set
-┌ Warning: identifiable edges lengths were originally missing, so assigned default value of 1.0
-└ @ PhyloNetworks ~/.julia/packages/PhyloNetworks/zeoh2/src/pseudolik.jl:1322
-ERROR: TaskFailedException:
-UndefVarError: hybridlambda not defined
-macro expansion at /home/travis/build/cecileane/QuartetNetworkGoodnessFit.jl/src/quarnetGoF.jl:226 [inlined]
-(::QuartetNetworkGoodnessFit.var&quot;#30#33&quot;{typeof(QuartetNetworkGoodnessFit.multinom_lrt!),Bool,Bool,Int64,Array{Int64,1},String,Array{Float64,1},SharedArrays.SharedArray{Float64,1},SharedArrays.SharedArray{Float64,2},Array{String,1},String})(::UnitRange{Int64}, ::Int64, ::Int64) at /buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.4/Distributed/src/macros.jl:302
-#158 at /buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.4/Distributed/src/macros.jl:87 [inlined]
-run_work_thunk(::Distributed.var&quot;#158#160&quot;{UnitRange{Int64},QuartetNetworkGoodnessFit.var&quot;#30#33&quot;{typeof(QuartetNetworkGoodnessFit.multinom_lrt!),Bool,Bool,Int64,Array{Int64,1},String,Array{Float64,1},SharedArrays.SharedArray{Float64,1},SharedArrays.SharedArray{Float64,2},Array{String,1},String},UnitRange{Int64}}, ::Bool) at /buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.4/Distributed/src/process_messages.jl:79
-run_work_thunk at /buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.4/Distributed/src/process_messages.jl:88 [inlined]
-(::Distributed.var&quot;#94#96&quot;{Distributed.RemoteValue,Distributed.var&quot;#158#160&quot;{UnitRange{Int64},QuartetNetworkGoodnessFit.var&quot;#30#33&quot;{typeof(QuartetNetworkGoodnessFit.multinom_lrt!),Bool,Bool,Int64,Array{Int64,1},String,Array{Float64,1},SharedArrays.SharedArray{Float64,1},SharedArrays.SharedArray{Float64,2},Array{String,1},String},UnitRange{Int64}}})() at ./task.jl:358
-Stacktrace:
- [1] sync_end(::Array{Any,1}) at ./task.jl:316
- [2] (::Distributed.var&quot;#157#159&quot;{QuartetNetworkGoodnessFit.var&quot;#30#33&quot;{typeof(QuartetNetworkGoodnessFit.multinom_lrt!),Bool,Bool,Int64,Array{Int64,1},String,Array{Float64,1},SharedArrays.SharedArray{Float64,1},SharedArrays.SharedArray{Float64,2},Array{String,1},String},UnitRange{Int64}})() at ./task.jl:335</code></pre><p>In the result, the first 3 numbers are the p-value of the overall goodness-of-fit test, the uncorrected z-value, and the estimate of σ to correct the z-value for dependence:</p><pre><code class="language-julia-repl">julia&gt; res0[[1,2,3]] # p-value, uncorrected z, σ
-ERROR: UndefVarError: res0 not defined</code></pre><p>Here, we have evidence that the tree <code>net0</code> does not fit the data adequately. Note that σ=1 corresponds to independent quartet outlier p-values. Typical estimates of σ are quite larger than 1, increase with the number of taxa, and increase with longer branch lengths (for a given number of taxa).</p><p>The next element is the list of outlier p-values, which was also added to the data frame that contains our data:</p><pre><code class="language-julia-repl">julia&gt; res0[4]
-ERROR: UndefVarError: res0 not defined
+200.0 gene trees per 4-taxon set</code></pre><p>Before re-running with more simulations, we can update the network <code>net0</code> to the version that has optimized branch lengths:</p><pre><code class="language-julia-repl">julia&gt; net0 = res0[5]
+HybridNetwork, Rooted Network
+9 edges
+10 nodes: 6 tips, 0 hybrid nodes, 4 internal tree nodes.
+tip labels: D, C, A, B, ...
+(((D:0.0,C:0.0):3.201,(A:1.933,B:1.933):1.268):0.711,E:3.912,O:3.912);</code></pre><p>Now we re-run the test using the option <code>false</code> to not re-optimize branch lengths. We use <code>nsim=200</code> simulations below to make this example faster. For a real data analysis, delete the <code>nsim</code> option to use the default instead (1000) or specify higher value.</p><pre><code class="language-julia-repl">julia&gt; res0 = quarnetGoFtest!(net0, qCF, false; seed=234, nsim=200);
+200.0 gene trees per 4-taxon set</code></pre><p>In the result, the first 3 numbers are the p-value of the overall goodness-of-fit test, the uncorrected z-value, and the estimate of σ to correct the z-value for dependence:</p><pre><code class="language-julia-repl">julia&gt; res0[[1,2,3]] # p-value, uncorrected z, σ
+(0.0010376989827210526, 5.034965460952285, 1.635140425323255)</code></pre><p>Here, we have evidence that the tree <code>net0</code> does not fit the data adequately. Note that σ=1 corresponds to independent quartet outlier p-values. Typical estimates of σ are quite larger than 1, increase with the number of taxa, and increase with longer branch lengths (for a given number of taxa).</p><p>The next element is the list of outlier p-values, which was also added to the data frame that contains our data:</p><pre><code class="language-julia-repl">julia&gt; res0[4]
+15-element Array{Float64,1}:
+ 0.93548482433139
+ 0.7903913213966525
+ 0.7903913213966525
+ 0.22648889585910295
+ 0.22648889585910295
+ 0.7649801373330675
+ 0.7649801373330675
+ 0.22648889585910295
+ 0.22648889585910295
+ 0.009946859148794496
+ 9.478813417519991e-8
+ 2.9992751677925755e-7
+ 9.478813417519991e-8
+ 2.9992751677925755e-7
+ 0.06821910216330293
 
 julia&gt; qCF[:,[:t1,:t2,:t3,:t4,:p_value]]
-ERROR: ArgumentError: column name :p_value not found in the data frame</code></pre><p>The very small overall p-value indicated an excess of outlier four-taxon sets. Here we see what these outliers are: all four-taxon sets containing O, E and either A or B are strong outliers (very small outlier p-values).</p><p>In fact, the CF data were simulated on <code>net1</code>, in which the AB clade received gene flow from E. (See below if interested in the simulation). We can re-run an analysis using <code>net1</code> this time:</p><pre><code class="language-julia-repl">julia&gt; res1 = quarnetGoFtest!(net1, qCF, true; seed=721, nsim=200);
+15×5 DataFrames.DataFrame
+│ Row │ t1     │ t2     │ t3     │ t4     │ p_value    │
+│     │ String │ String │ String │ String │ Float64    │
+├─────┼────────┼────────┼────────┼────────┼────────────┤
+│ 1   │ A      │ B      │ C      │ D      │ 0.935485   │
+│ 2   │ A      │ B      │ C      │ E      │ 0.790391   │
+│ 3   │ A      │ B      │ D      │ E      │ 0.790391   │
+│ 4   │ A      │ C      │ D      │ E      │ 0.226489   │
+│ 5   │ B      │ C      │ D      │ E      │ 0.226489   │
+│ 6   │ A      │ B      │ C      │ O      │ 0.76498    │
+│ 7   │ A      │ B      │ D      │ O      │ 0.76498    │
+│ 8   │ A      │ C      │ D      │ O      │ 0.226489   │
+│ 9   │ B      │ C      │ D      │ O      │ 0.226489   │
+│ 10  │ A      │ B      │ E      │ O      │ 0.00994686 │
+│ 11  │ A      │ C      │ E      │ O      │ 9.47881e-8 │
+│ 12  │ B      │ C      │ E      │ O      │ 2.99928e-7 │
+│ 13  │ A      │ D      │ E      │ O      │ 9.47881e-8 │
+│ 14  │ B      │ D      │ E      │ O      │ 2.99928e-7 │
+│ 15  │ C      │ D      │ E      │ O      │ 0.0682191  │</code></pre><p>The very small overall p-value indicated an excess of outlier four-taxon sets. Here we see what these outliers are: all four-taxon sets containing O, E and either A or B are strong outliers (very small outlier p-values).</p><p>In fact, the CF data were simulated on <code>net1</code>, in which the AB clade received gene flow from E. (See below if interested in the simulation). We can re-run an analysis using <code>net1</code> this time:</p><pre><code class="language-julia-repl">julia&gt; res1 = quarnetGoFtest!(net1, qCF, true; seed=721, nsim=200);
 200.0 gene trees per 4-taxon set
 hybrid edges for hybrid node 5 have missing gamma&#39;s, set default: 0.9,0.1
-ERROR: TaskFailedException:
-UndefVarError: hybridlambda not defined
-macro expansion at /home/travis/build/cecileane/QuartetNetworkGoodnessFit.jl/src/quarnetGoF.jl:226 [inlined]
-(::QuartetNetworkGoodnessFit.var&quot;#30#33&quot;{typeof(QuartetNetworkGoodnessFit.multinom_lrt!),Bool,Bool,Int64,Array{Int64,1},String,Array{Float64,1},SharedArrays.SharedArray{Float64,1},SharedArrays.SharedArray{Float64,2},Array{String,1},String})(::UnitRange{Int64}, ::Int64, ::Int64) at /buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.4/Distributed/src/macros.jl:302
-#158 at /buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.4/Distributed/src/macros.jl:87 [inlined]
-run_work_thunk(::Distributed.var&quot;#158#160&quot;{UnitRange{Int64},QuartetNetworkGoodnessFit.var&quot;#30#33&quot;{typeof(QuartetNetworkGoodnessFit.multinom_lrt!),Bool,Bool,Int64,Array{Int64,1},String,Array{Float64,1},SharedArrays.SharedArray{Float64,1},SharedArrays.SharedArray{Float64,2},Array{String,1},String},UnitRange{Int64}}, ::Bool) at /buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.4/Distributed/src/process_messages.jl:79
-run_work_thunk at /buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.4/Distributed/src/process_messages.jl:88 [inlined]
-(::Distributed.var&quot;#94#96&quot;{Distributed.RemoteValue,Distributed.var&quot;#158#160&quot;{UnitRange{Int64},QuartetNetworkGoodnessFit.var&quot;#30#33&quot;{typeof(QuartetNetworkGoodnessFit.multinom_lrt!),Bool,Bool,Int64,Array{Int64,1},String,Array{Float64,1},SharedArrays.SharedArray{Float64,1},SharedArrays.SharedArray{Float64,2},Array{String,1},String},UnitRange{Int64}}})() at ./task.jl:358
-Stacktrace:
- [1] sync_end(::Array{Any,1}) at ./task.jl:316
- [2] (::Distributed.var&quot;#157#159&quot;{QuartetNetworkGoodnessFit.var&quot;#30#33&quot;{typeof(QuartetNetworkGoodnessFit.multinom_lrt!),Bool,Bool,Int64,Array{Int64,1},String,Array{Float64,1},SharedArrays.SharedArray{Float64,1},SharedArrays.SharedArray{Float64,2},Array{String,1},String},UnitRange{Int64}})() at ./task.jl:335
 
 julia&gt; res1[[1,2,3]]
-ERROR: UndefVarError: res1 not defined</code></pre><p>This network is found to provide an adequate absolute fit (as expected from how the data were simulated).</p><p>Note that after optimization of branch lengths and γs to best fit the CF data, the network was &quot;ultrametrized&quot; along its major tree to adhere to the hybrid-lambda simulator&#39;s requirement that the network is ultrametric:</p><pre><code class="language-julia-repl">julia&gt; res1[5]
-ERROR: UndefVarError: res1 not defined</code></pre><p>For more options, see <a href="../../lib/public/#QuartetNetworkGoodnessFit.quarnetGoFtest!-Tuple{HybridNetwork,DataFrames.DataFrame,Bool}"><code>quarnetGoFtest!</code></a>, such as for the outlier test statistic (G or likelihood ratio test by default).</p><h2 id="parallel-computations-1"><a class="docs-heading-anchor" href="#parallel-computations-1">parallel computations</a><a class="docs-heading-anchor-permalink" href="#parallel-computations-1" title="Permalink"></a></h2><p>For larger networks, the large number of four-taxon sets causes the test to run more slowly. The computations can be parallelized by providing more processors to Julia. For instance, this can be done by starting julia with the <code>-p</code> option:</p><pre><code class="language-shell">julia -p 3 # 3 worker processors, 4 processors total</code></pre><p>To check for progress during the test, we can check for a new directory with a name starting with <code>jl_</code>, such as <code>jl_0CVOfE</code> (the end of this name is randomly generated). Then we can check the files in this directory: their names are indicative of the simulation replicate number that is currently being processed. In the example below, there are 3 files in my <code>jl_0CVOfE</code> directory (because of using 3 workers), and these files show processing replicate numbers 106, 440 and 773 (out of the 1000 replicates by default). Each contains 200 lines (because it contains 1 gene tree per line, since the original data had 200 genes). It means that the simulation-based test is at about 1/3 of its way. By the way, these files should not be modified. At the end of the simulation-based test, these temporary files and folder are automatically deleted.</p><pre><code class="language-shell">$ wc -l jl_0CVOfE/*
+(0.7028674648341886, -0.8885233166386386, 1.6680695849846545)</code></pre><p>This network is found to provide an adequate absolute fit (as expected from how the data were simulated).</p><p>Note that after optimization of branch lengths and γs to best fit the CF data, the network was &quot;ultrametrized&quot; along its major tree to adhere to the hybrid-lambda simulator&#39;s requirement that the network is ultrametric:</p><pre><code class="language-julia-repl">julia&gt; res1[5]
+HybridNetwork, Rooted Network
+12 edges
+12 nodes: 6 tips, 1 hybrid nodes, 5 internal tree nodes.
+tip labels: D, C, A, B, ...
+(((D:0.0,C:0.0):2.903,((A:0.622,B:0.622):0.957)#H1:1.324::0.774):1.696,(#H1:0.348::0.226,E:1.537):3.063,O:4.599);</code></pre><p>For more options, see <a href="../../lib/public/#QuartetNetworkGoodnessFit.quarnetGoFtest!-Tuple{HybridNetwork,DataFrames.DataFrame,Bool}"><code>quarnetGoFtest!</code></a>, such as for the outlier test statistic (G or likelihood ratio test by default).</p><h2 id="parallel-computations-1"><a class="docs-heading-anchor" href="#parallel-computations-1">parallel computations</a><a class="docs-heading-anchor-permalink" href="#parallel-computations-1" title="Permalink"></a></h2><p>For larger networks, the large number of four-taxon sets causes the test to run more slowly. The computations can be parallelized by providing more processors to Julia. For instance, this can be done by starting julia with the <code>-p</code> option:</p><pre><code class="language-shell">julia -p 3 # 3 worker processors, 4 processors total</code></pre><p>To check for progress during the test, we can check for a new directory with a name starting with <code>jl_</code>, such as <code>jl_0CVOfE</code> (the end of this name is randomly generated). Then we can check the files in this directory: their names are indicative of the simulation replicate number that is currently being processed. In the example below, there are 3 files in my <code>jl_0CVOfE</code> directory (because of using 3 workers), and these files show processing replicate numbers 106, 440 and 773 (out of the 1000 replicates by default). Each contains 200 lines (because it contains 1 gene tree per line, since the original data had 200 genes). It means that the simulation-based test is at about 1/3 of its way. By the way, these files should not be modified. At the end of the simulation-based test, these temporary files and folder are automatically deleted.</p><pre><code class="language-shell">$ wc -l jl_0CVOfE/*
      200 jl_0CVOfE/genetrees_rep106_coal_unit
      200 jl_0CVOfE/genetrees_rep440_coal_unit
      200 jl_0CVOfE/genetrees_rep773_coal_unit</code></pre><h2 id="quartet-concordance-factor-simulation-1"><a class="docs-heading-anchor" href="#quartet-concordance-factor-simulation-1">quartet concordance factor simulation</a><a class="docs-heading-anchor-permalink" href="#quartet-concordance-factor-simulation-1" title="Permalink"></a></h2><p>The data in <code>qCF</code> were simulated using <a href="https://github.com/hybridLambda/hybrid-Lambda">hybrid-Lambda</a>, which comes with <code>QuartetNetworkGoodnessFit</code>. In the code below, hybrid-lambda is called within julia, asking for the simulation of 200 genes (<code>-num 200</code>).</p><p>Note that hybrid-lambda assumes that the tree or network is ultrametric, but runs even if this assumption is not met.</p><pre><code class="language-julia">net1 = readTopology(&quot;((((D:0.2,C:0.2):2.4,((A:0.4,B:0.4):1.1)#H1:1.1::0.7):2.0,(#H1:0.0::0.3,E:1.5):3.1):1.0,O:5.6);&quot;);
@@ -83,4 +89,4 @@ hl = QuartetNetworkGoodnessFit.hybridlambda # path to hybrid-lambda simulator, o
 net1HL = hybridlambdaformat(net1) # format for the network, to use below by hybrid-lambda
 run(`$hl -spcu &quot;((((D:0.2,C:0.2)I1:2.4,((A:0.4,B:0.4)I2:1.1)H1#0.7:1.1)I3:2.0,(H1#0.7:0.0,E:1.5)I4:3.1)I5:1.0,O:5.6)I6;&quot; -num 200 -seed 123 -o &quot;genetrees&quot;`)
 treelist = readMultiTopology(&quot;genetrees_coal_unit&quot;)
-obsCF = writeTableCF(countquartetsintrees(treelist)...)</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« home</a><a class="docs-footer-nextpage" href="../../lib/public/">public »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Saturday 2 May 2020 16:20">Saturday 2 May 2020</span>. Using Julia version 1.4.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+obsCF = writeTableCF(countquartetsintrees(treelist)...)</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« home</a><a class="docs-footer-nextpage" href="../../lib/public/">public »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Saturday 2 May 2020 22:13">Saturday 2 May 2020</span>. Using Julia version 1.4.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
