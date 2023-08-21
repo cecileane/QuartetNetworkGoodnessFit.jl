@@ -49,24 +49,24 @@ B1,B2,C,D: [1.0, 9.422e-7, 9.422e-7]</code></pre><p>For each 4-taxon set above, 
  Row │ qind   t1      t2      t3      t4      CF12_34  CF13_24  CF14_23  ngenes
      │ Int64  String  String  String  String  Float64  Float64  Float64  Float64
 ─────┼───────────────────────────────────────────────────────────────────────────
-   1 │     1  A1      A2      B1      B2         0.97     0.03      0.0    100.0
-   2 │     2  A1      A2      B1      C          0.2      0.3       0.5    100.0</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; select!(df_sim, Not([:qind,:ngenes])); # delete columns with q index and number of genes</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; df_both = outerjoin(select(df, Not(:qind)), df_sim;
+   1 │     1  A1      A2      B1      B2         0.87     0.07     0.06    100.0
+   2 │     2  A1      A2      B1      C          0.11     0.46     0.43    100.0</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; select!(df_sim, Not([:qind,:ngenes])); # delete columns with q index and number of genes</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; df_both = outerjoin(select(df, Not(:qind)), df_sim;
                on=[:t1,:t2,:t3,:t4], renamecols = &quot;exact&quot; =&gt; &quot;sim&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">15×10 DataFrame
  Row │ t1      t2      t3      t4      CF12_34exact  CF13_24exact  CF14_23exact  CF12_34sim  CF13_24sim  CF14_23sim
      │ String  String  String  String  Float64?      Float64?      Float64?      Float64?    Float64?    Float64?
 ─────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────
-   1 │ A1      A2      B1      B2         0.888546     0.0557272     0.0557272         0.97        0.03        0.0
-   2 │ A1      A2      B1      C          0.167503     0.416249      0.416249          0.2         0.3         0.5
-   3 │ A1      A2      B2      C          0.167503     0.416249      0.416249          0.19        0.3         0.51
-   4 │ A1      B1      B2      C          0.0371891    0.0371891     0.925622          0.0         0.01        0.99
-   5 │ A2      B1      B2      C          0.0371891    0.0371891     0.925622          0.0         0.03        0.97
-   6 │ A1      A2      B1      D          0.167503     0.416249      0.416249          0.19        0.29        0.52
-   7 │ A1      A2      B2      D          0.167503     0.416249      0.416249          0.18        0.29        0.53
-   8 │ A1      B1      B2      D          0.0371891    0.0371891     0.925622          0.0         0.01        0.99
-   9 │ A2      B1      B2      D          0.0371891    0.0371891     0.925622          0.0         0.03        0.97
-  10 │ A1      A2      C       D          0.689828     0.155086      0.155086          0.77        0.12        0.11
-  11 │ A1      B1      C       D          0.793009     0.103496      0.103496          0.81        0.09        0.1
-  12 │ A2      B1      C       D          0.793009     0.103496      0.103496          0.82        0.08        0.1
-  13 │ A1      B2      C       D          0.793009     0.103496      0.103496          0.81        0.09        0.1
-  14 │ A2      B2      C       D          0.793009     0.103496      0.103496          0.82        0.08        0.1
-  15 │ B1      B2      C       D          0.999998     9.42151e-7    9.42151e-7        1.0         0.0         0.0</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../simulate/">« simulating quartet concordance factors</a><a class="docs-footer-nextpage" href="../../lib/public/">public »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.24 on <span class="colophon-date" title="Tuesday 11 April 2023 19:23">Tuesday 11 April 2023</span>. Using Julia version 1.8.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+   1 │ A1      A2      B1      B2         0.888546     0.0557272     0.0557272         0.87        0.07        0.06
+   2 │ A1      A2      B1      C          0.167503     0.416249      0.416249          0.11        0.46        0.43
+   3 │ A1      A2      B2      C          0.167503     0.416249      0.416249          0.11        0.46        0.43
+   4 │ A1      B1      B2      C          0.0371891    0.0371891     0.925622          0.06        0.04        0.9
+   5 │ A2      B1      B2      C          0.0371891    0.0371891     0.925622          0.04        0.03        0.93
+   6 │ A1      A2      B1      D          0.167503     0.416249      0.416249          0.13        0.45        0.42
+   7 │ A1      A2      B2      D          0.167503     0.416249      0.416249          0.13        0.45        0.42
+   8 │ A1      B1      B2      D          0.0371891    0.0371891     0.925622          0.06        0.04        0.9
+   9 │ A2      B1      B2      D          0.0371891    0.0371891     0.925622          0.04        0.03        0.93
+  10 │ A1      A2      C       D          0.689828     0.155086      0.155086          0.63        0.13        0.24
+  11 │ A1      B1      C       D          0.793009     0.103496      0.103496          0.78        0.08        0.14
+  12 │ A2      B1      C       D          0.793009     0.103496      0.103496          0.77        0.14        0.09
+  13 │ A1      B2      C       D          0.793009     0.103496      0.103496          0.78        0.08        0.14
+  14 │ A2      B2      C       D          0.793009     0.103496      0.103496          0.77        0.14        0.09
+  15 │ B1      B2      C       D          0.999998     9.42151e-7    9.42151e-7        1.0         0.0         0.0</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../simulate/">« simulating quartet concordance factors</a><a class="docs-footer-nextpage" href="../../lib/public/">public »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.25 on <span class="colophon-date" title="Monday 21 August 2023 17:02">Monday 21 August 2023</span>. Using Julia version 1.9.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
