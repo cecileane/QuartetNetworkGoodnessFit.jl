@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>expected concordance factors · QGoF</title><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img src="../../assets/logo.png" alt="QGoF logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../../">QGoF</a></span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">home</a></li><li><span class="tocitem">manual</span><ul><li><a class="tocitem" href="../gof/">goodness of fit</a></li><li><a class="tocitem" href="../simulate/">simulating quartet concordance factors</a></li><li class="is-active"><a class="tocitem" href>expected concordance factors</a></li></ul></li><li><span class="tocitem">library</span><ul><li><a class="tocitem" href="../../lib/public/">public</a></li><li><a class="tocitem" href="../../lib/internal/">internal</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">manual</a></li><li class="is-active"><a href>expected concordance factors</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>expected concordance factors</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/cecileane/QuartetNetworkGoodnessFit.jl/blob/master/docs/src/man/expected_qCFs.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="expected-concordance-factors"><a class="docs-heading-anchor" href="#expected-concordance-factors">expected concordance factors</a><a id="expected-concordance-factors-1"></a><a class="docs-heading-anchor-permalink" href="#expected-concordance-factors" title="Permalink"></a></h1><p>The quartet concordance factors expected from a network can be calculated exactly on a network of any level. This can be done here using a recursive algorithm – although it may run slowly as its complexity was not optimized. Below is an example, with a network on 6 taxa with 2 reticulations.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; net = readTopology(&quot;(D:1,((C:1,#H25:0):0.1,((((B1:10,B2:1):1.5,#H1:0):10.8,((A1:1,A2:1):0.001)#H1:0::0.5):0.5)#H25:0::0.501):1);&quot;);</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; eCFs,t = network_expectedCF(net);</code><code class="nohighlight hljs ansi" style="display:block;">Calculation quartet CFs for 15 quartets...
+0+---------------+100%
+  ***************</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; t # taxon list</code><code class="nohighlight hljs ansi" style="display:block;">6-element Vector{String}:
+ &quot;A1&quot;
+ &quot;A2&quot;
+ &quot;B1&quot;
+ &quot;B2&quot;
+ &quot;C&quot;
+ &quot;D&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; first(eCFs, 2) # first 2 4-taxon sets, each with 3 quartet CFs. taxon numbers are indices in the taxon list above</code><code class="nohighlight hljs ansi" style="display:block;">2-element Vector{PhyloNetworks.QuartetT{StaticArraysCore.MVector{3, Float64}}}:
+ 4-taxon set number 1; taxon numbers: 1,2,3,4
+data: [0.8885456713760765, 0.05572716431196175, 0.05572716431196175]
+ 4-taxon set number 2; taxon numbers: 1,2,3,5
+data: [0.16750297999120484, 0.41624851000439755, 0.41624851000439755]</code></pre><p>To look at these quartet CFs, we define below a function to convert them to a string. This string can then be printed to the screen (shown below with <code>print</code>) or written to a file (using <code>write</code>, not shown).</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; qCFstring(qlist,taxa, sigdigits=4) = join(
+         [join(taxa[q.taxonnumber],&quot;,&quot;) * &quot;: &quot; * string(round.(q.data, sigdigits=sigdigits))
+          for q in qlist],   &quot;\n&quot;);</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; print(qCFstring(eCFs,t))</code><code class="nohighlight hljs ansi" style="display:block;">A1,A2,B1,B2: [0.8885, 0.05573, 0.05573]
+A1,A2,B1,C: [0.1675, 0.4162, 0.4162]
+A1,A2,B2,C: [0.1675, 0.4162, 0.4162]
+A1,B1,B2,C: [0.03719, 0.03719, 0.9256]
+A2,B1,B2,C: [0.03719, 0.03719, 0.9256]
+A1,A2,B1,D: [0.1675, 0.4162, 0.4162]
+A1,A2,B2,D: [0.1675, 0.4162, 0.4162]
+A1,B1,B2,D: [0.03719, 0.03719, 0.9256]
+A2,B1,B2,D: [0.03719, 0.03719, 0.9256]
+A1,A2,C,D: [0.6898, 0.1551, 0.1551]
+A1,B1,C,D: [0.793, 0.1035, 0.1035]
+A2,B1,C,D: [0.793, 0.1035, 0.1035]
+A1,B2,C,D: [0.793, 0.1035, 0.1035]
+A2,B2,C,D: [0.793, 0.1035, 0.1035]
+B1,B2,C,D: [1.0, 9.422e-7, 9.422e-7]</code></pre><p>For each 4-taxon set above, the 3 concordance factors are for the quartets listed in this order: 12|34, 13|24, 14|23 where 1,2,3,4 refer to the order of the taxa listed to the left.</p><p>We can also convert our list to a data frame:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using DataFrames</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; df = writeTableCF(eCFs, t) # requires PhyloNetworks v0.16.1</code><code class="nohighlight hljs ansi" style="display:block;">15×8 DataFrame
+ Row │ qind   t1      t2      t3      t4      CF12_34    CF13_24     CF14_23
+     │ Int64  String  String  String  String  Float64    Float64     Float64
+─────┼──────────────────────────────────────────────────────────────────────────
+   1 │     1  A1      A2      B1      B2      0.888546   0.0557272   0.0557272
+   2 │     2  A1      A2      B1      C       0.167503   0.416249    0.416249
+   3 │     3  A1      A2      B2      C       0.167503   0.416249    0.416249
+   4 │     4  A1      B1      B2      C       0.0371891  0.0371891   0.925622
+   5 │     5  A2      B1      B2      C       0.0371891  0.0371891   0.925622
+   6 │     6  A1      A2      B1      D       0.167503   0.416249    0.416249
+   7 │     7  A1      A2      B2      D       0.167503   0.416249    0.416249
+   8 │     8  A1      B1      B2      D       0.0371891  0.0371891   0.925622
+   9 │     9  A2      B1      B2      D       0.0371891  0.0371891   0.925622
+  10 │    10  A1      A2      C       D       0.689828   0.155086    0.155086
+  11 │    11  A1      B1      C       D       0.793009   0.103496    0.103496
+  12 │    12  A2      B1      C       D       0.793009   0.103496    0.103496
+  13 │    13  A1      B2      C       D       0.793009   0.103496    0.103496
+  14 │    14  A2      B2      C       D       0.793009   0.103496    0.103496
+  15 │    15  B1      B2      C       D       0.999998   9.42151e-7  9.42151e-7</code></pre><p>If we wanted to compare with the observed frequency among 100 gene trees, we could use data frame manipulations to join the two data frames:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using PhyloCoalSimulations</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; genetrees = simulatecoalescent(net, 100, 1); # 100 genes, 1 individual / pop</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; df_sim = writeTableCF(countquartetsintrees(genetrees; showprogressbar=false)...);</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; first(df_sim, 2)</code><code class="nohighlight hljs ansi" style="display:block;">2×9 DataFrame
+ Row │ qind   t1      t2      t3      t4      CF12_34  CF13_24  CF14_23  ngenes
+     │ Int64  String  String  String  String  Float64  Float64  Float64  Float64
+─────┼───────────────────────────────────────────────────────────────────────────
+   1 │     1  A1      A2      B1      B2         0.91     0.03     0.06    100.0
+   2 │     2  A1      A2      B1      C          0.14     0.38     0.48    100.0</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; select!(df_sim, Not([:qind,:ngenes])); # delete columns with q index and number of genes</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; df_both = outerjoin(select(df, Not(:qind)), df_sim;
+               on=[:t1,:t2,:t3,:t4], renamecols = &quot;exact&quot; =&gt; &quot;sim&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">15×10 DataFrame
+ Row │ t1      t2      t3      t4      CF12_34exact  CF13_24exact  CF14_23exact  CF12_34sim  CF13_24sim  CF14_23sim
+     │ String  String  String  String  Float64?      Float64?      Float64?      Float64?    Float64?    Float64?
+─────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   1 │ A1      A2      B1      B2         0.888546     0.0557272     0.0557272         0.91        0.03        0.06
+   2 │ A1      A2      B1      C          0.167503     0.416249      0.416249          0.14        0.38        0.48
+   3 │ A1      A2      B2      C          0.167503     0.416249      0.416249          0.13        0.38        0.49
+   4 │ A1      B1      B2      C          0.0371891    0.0371891     0.925622          0.02        0.04        0.94
+   5 │ A2      B1      B2      C          0.0371891    0.0371891     0.925622          0.05        0.03        0.92
+   6 │ A1      A2      B1      D          0.167503     0.416249      0.416249          0.14        0.38        0.48
+   7 │ A1      A2      B2      D          0.167503     0.416249      0.416249          0.13        0.38        0.49
+   8 │ A1      B1      B2      D          0.0371891    0.0371891     0.925622          0.02        0.04        0.94
+   9 │ A2      B1      B2      D          0.0371891    0.0371891     0.925622          0.05        0.03        0.92
+  10 │ A1      A2      C       D          0.689828     0.155086      0.155086          0.64        0.15        0.21
+  11 │ A1      B1      C       D          0.793009     0.103496      0.103496          0.75        0.11        0.14
+  12 │ A2      B1      C       D          0.793009     0.103496      0.103496          0.83        0.1         0.07
+  13 │ A1      B2      C       D          0.793009     0.103496      0.103496          0.75        0.11        0.14
+  14 │ A2      B2      C       D          0.793009     0.103496      0.103496          0.83        0.1         0.07
+  15 │ B1      B2      C       D          0.999998     9.42151e-7    9.42151e-7        1.0         0.0         0.0</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../simulate/">« simulating quartet concordance factors</a><a class="docs-footer-nextpage" href="../../lib/public/">public »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.24 on <span class="colophon-date" title="Tuesday 11 April 2023 19:56">Tuesday 11 April 2023</span>. Using Julia version 1.8.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
